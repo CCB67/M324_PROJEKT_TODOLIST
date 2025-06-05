@@ -9,7 +9,7 @@ import './App.css'
  * Die Todo-App basiert auf einem React-JS Frontend und Rest-API mit Springboot-Framework (Deploy on JAR -> Docker).
  *
  * Execute and build information:
- *  - Frontend Start: npm run dev  (Terminalbefehl im frontend-vite Verzeichnis)
+ *  - Frontend Start: npm run dev  (Terminalbefehl im frontend Verzeichnis)
  *  - Backend Start: EE Eclipse-Projekt -> maven build -> spring-boot:run oder JAR auf docker mit Java 8 oder höher
  *  - Browser: http://localhost:3000 für Frontend; http://localhost:8080/ für Backend
  *
