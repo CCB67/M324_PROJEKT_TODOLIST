@@ -8,8 +8,9 @@ Kommentaren vor allem in App.js zu finden.
 ## Relevante Dateien in den Teil-Projekten (Verzeichnisse):
 
 1. diese Beschreibung
-2. frontend (Tools: npm und VSCode)
-	* App.js
+2. frontend-vite (Tools: npm und VSCode)
+	* App.jsx
+3. frontend ist veraltet kann gelöscht werden
 
 3. backend (Eclipse oder VS-Code)
 	* DemoApplication.java
