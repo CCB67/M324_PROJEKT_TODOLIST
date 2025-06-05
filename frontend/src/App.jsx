@@ -3,6 +3,34 @@ import logo from './assets/react.svg'
 import viteLogo from '/vite.svg'
 import './App.css'
 
+ /**
+ * ==================================
+ * Gemeinsames Basisprojekt: ToDo-App
+ * ==================================
+ * Die Todo-App basiert auf einem React-JS Frontend und Rest-API mit Springboot-Framework (Deploy on JAR -> Docker).
+ *
+ * Execute and build information:
+ *  - Frontend Start: npm run dev  (Terminalbefehl im frontend-vite Verzeichnis)
+ *  - Backend Start: EE Eclipse-Projekt -> maven build -> spring-boot:run oder JAR auf docker mit Java 8 oder höher
+ *  - Browser: http://localhost:3000 für Frontend; http://localhost:8080/ für Backend
+ *
+ * Aktuelle Featureliste:
+ *  - Singlepage App
+ *  - neues Todo in Textfeld eingeben, submit zum Speichern und direkt als Liste in der Eingabereihenfolge anzeigen
+ *  - Speicherung zunächst nur "In memory"
+ *  - im Moment nur ein Text Eingabefeld für die ToDo Beschreibung
+ *  - alle offenen Todos werden als Liste angezeigt, jedes Todo hat einen Button zum "abschliessen" und
+ *    werden dabei definitiv und ohne Bestätigung direkt gelöscht
+ *
+ * Mögliche Erweiterungen für die Lernenden:
+ *  - Persistent storage (das MySQL Plugin ist im Spring-Framework bereits integriert)
+ *  - Deadlines (duedate)
+ *  - nicht löschen sondern mit Status (open, done) mit evtl. Anzeigefilter
+ *  - Sortieren nach Deadline
+ *  - Desing Verbesserungen
+ *  - ...
+ */
+
 function App() {
   const [count, setCount] = useState(0)
   const [todos, setTodos] = useState([]);
@@ -41,7 +69,6 @@ function App() {
     setTaskdescription(event.target.value);
   }
 
-
   /** Is called when the component is mounted (after any refresh or F5).
   ** It updates the component's state with the fetched todos from the API Endpoint '/'.
   */
@@ -51,8 +78,8 @@ function App() {
     });
   }, []);
 
-
  /** Is called when the Done-Button is pressed. It sends a POST request to the API endpoint '/delete' and updates the component's state with the new todo.
+
   ** In this case if the task with the unique taskdescription is found on the server, it will be removed from the list.
   */
   const handleDelete = (event, taskdescription) => {
@@ -115,3 +142,4 @@ function App() {
 }
 
 export default App
+
