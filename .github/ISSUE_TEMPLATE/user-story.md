@@ -21,11 +21,11 @@ assignees: ''
 
 ---
 
-### ✅ Akzeptanzkriterien
+### ✅ Teilaufgaben
 
-- [ ] Kriterium 1
-- [ ] Kriterium 2
-- [ ] Kriterium 3
+- [ ] Task 1
+- [ ] Task 2
+- [ ] Task 3
 
 ---
 
