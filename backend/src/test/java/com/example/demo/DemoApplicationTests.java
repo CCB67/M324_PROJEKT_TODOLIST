@@ -10,7 +10,8 @@ class DemoApplicationTests {
 
 	@Test
 	void contextLoads() {
-		assertTrue(true, "alles gut");
+		System.out.println("TEST LÄUFT: alles gut");
+		assertTrue(true);
 	}
 
 }
