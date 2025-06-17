@@ -55,6 +55,13 @@ public class DemoApplication {
 	}
 
 	@CrossOrigin
+	@PostMapping("/reset")
+	public void resetAll() {
+		System.out.println("API EP '/reset': ");
+		tasks.clear();
+	}
+	
+	@CrossOrigin
 	@PostMapping("/tasks")
 	public String addTask(@RequestBody String taskdescription) {
 		System.out.println("API EP '/tasks': '" + taskdescription + "'");
