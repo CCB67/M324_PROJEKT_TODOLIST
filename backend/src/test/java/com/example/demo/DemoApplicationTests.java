@@ -48,7 +48,7 @@ public class DemoApplicationTests {
         // Tasks abrufen und prüfen
         mockMvc.perform(get("/"))
                 .andExpect(status().isOk())
-                .andExpect(content().json("[{\"taskdescription\":\"Beispielaufgabe1\"}]"));
+                .andExpect(content().json("[{\"taskdescription\":\"Beispielaufgabe\"}]"));
     }
 }
 
