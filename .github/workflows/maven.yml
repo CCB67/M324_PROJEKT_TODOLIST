@@ -29,10 +29,11 @@ jobs:
         cache: maven
 
     - name: Test
-      run: mvn -f backend/ --batch-mode -Dmaven.test.failure.ignore=true test
-
+      run: mvn -f backend/ --batch-mode test
+      continue-on-error: true
+      
     - name: Build with Maven
-      run: mvn -B package --file backend/pom.xml
+      run: mvn --batch-mode package --file backend/pom.xml
 
     - name: Report
       uses: dorny/test-reporter@v1
