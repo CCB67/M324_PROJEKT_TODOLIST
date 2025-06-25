@@ -6,6 +6,7 @@ name: Java & Frontend CI (Single Job)
 on:
   pull_request:
     branches: [ "main" ]
+  workflow_dispatch:
 
 jobs:
   build-and-test:
