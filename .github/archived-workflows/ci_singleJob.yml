@@ -29,7 +29,7 @@ jobs:
         run: mvn -f backend/ --batch-mode test
         continue-on-error: true
 
-      # Backend: Build WAR
+      # Backend: Build JAR
       - name: Build Backend with Maven
         run: mvn --batch-mode package --file backend/pom.xml
 
