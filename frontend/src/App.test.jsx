@@ -1,15 +1,18 @@
-import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import { render, screen, fireEvent, waitFor, act } from '@testing-library/react';
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import App from './App';
 
+let mockId = 1;
+
 beforeEach(() => {
+  mockId = 1; // Reset ID before each test
   global.fetch = vi.fn((url, options) => {
     if (options?.method === 'POST') {
       const body = JSON.parse(options.body);
       return Promise.resolve({
         json: () =>
           Promise.resolve({
-            id: Date.now(), // Simuliere Backend-generierte ID
+            id: mockId++, // use consecutive ID
             ...body,
           }),
       });
@@ -27,15 +30,19 @@ afterEach(() => {
 });
 
 describe('App component', () => {
-  it('renders heading', () => {
-    render(<App />);
+  it('renders heading', async () => {
+    await act(async () => {
+      render(<App />);
+    });
     const headingElement = screen.getByRole('heading', { name: /ToDo Liste/i });
     expect(headingElement).toBeInTheDocument();
   });
 
   it('renders with initial state', async () => {
-    render(<App />);
-    const inputElement = await screen.findByLabelText('Neues Todo anlegen:');
+    await act(async () => {
+      render(<App />);
+    });
+    const inputElement = screen.getByLabelText('Neues Todo anlegen:');
     const addButtonElement = screen.getByRole('button', { name: /Absenden/i });
 
     expect(inputElement).toHaveValue('');
@@ -43,8 +50,10 @@ describe('App component', () => {
   });
 
   it('allows user to add a new task', async () => {
-    render(<App />);
-    const inputElement = await screen.findByLabelText('Neues Todo anlegen:');
+    await act(async () => {
+      render(<App />);
+    });
+    const inputElement = screen.getByLabelText('Neues Todo anlegen:');
     const addButtonElement = screen.getByRole('button', { name: /Absenden/i });
 
     fireEvent.change(inputElement, { target: { value: 'Buy_groceries' } });
@@ -56,8 +65,10 @@ describe('App component', () => {
   });
 
   it('allows user to add multiple tasks', async () => {
-    render(<App />);
-    const inputElement = await screen.findByLabelText('Neues Todo anlegen:');
+    await act(async () => {
+      render(<App />);
+    });
+    const inputElement = screen.getByLabelText('Neues Todo anlegen:');
     const addButtonElement = screen.getByRole('button', { name: /Absenden/i });
 
     fireEvent.change(inputElement, { target: { value: 'Buy_groceries' } });
