@@ -1,3 +1,9 @@
+# workflow with build and tests for backend and frontend
+# two separate jobs for backend and frontend run in parallel
+# both jobs are using docker images instead of using github actions in dedicated steps 
+# backend: maven:3.9-eclipse-temurin-17
+# frontend: node:20
+
 name: Java & Frontend CI
 
 on:
