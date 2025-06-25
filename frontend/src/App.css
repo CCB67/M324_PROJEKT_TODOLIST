@@ -33,6 +33,25 @@
     transform: rotate(0deg);
   }
   to {
-    transform: rotate(360deg);
+    transform: rotate(360deg);§
   }
+}§
+
+.todo-item {
+  display: flex;
+  align-items: center;
 }
+
+.delete-button {
+  color: #61dafb;
+  background: none;
+  border: 2px solid #2dac5c;
+  cursor: pointer;
+  padding: 4px;
+  margin-left: 8px;
+}
+.delete-button:hover {
+  background: #431519;
+  border-radius: 4px;
+}
+

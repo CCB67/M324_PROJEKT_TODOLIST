@@ -42,6 +42,19 @@ function App() {
       });
   };
 
+  // Löschen-Handler: entfernt aus State und ruft DELETE-API auf
+  const handleDelete = (id) => {
+    // State aktualisieren
+    setTasks((prev) => prev.filter((t) => t.id !== id));
+
+    // Optional: Backend informieren
+    fetch(`http://localhost:8080/api/tasks/${id}`, {
+      method: 'DELETE',
+    }).catch((err) =>
+      console.error('Fehler beim Löschen der Aufgabe:', err)
+    );
+  };
+
   return (
     <div className="App">
       <header className="App-header">
@@ -60,7 +73,16 @@ function App() {
         <div>
           <ul className="todo-list">
             {tasks.map((task) => (
-              <li key={task.id}>{task.description}</li>
+              <li key={task.id} className="todo-item">
+                {task.description}
+                <button
+                  onClick={() => handleDelete(task.id)}
+                  aria-label="Löschen"
+                  className="delete-button"
+                >
+                  delete
+                </button>
+              </li>
             ))}
           </ul>
         </div>
