@@ -1,19 +1,22 @@
-# workflow with upload of artifacts for backend and frontend
-# two separate jobs for backend and frontend run in parallel
+# workflow with build and tests for backend and frontend
+# all in one single serial execution
 
 name: Java & Frontend CI
 
 on:
+  push:
+    branches: [ "main" ]
   pull_request:
     branches: [ "main" ]
 
 jobs:
-  backend-build:
+  build-and-test:
     runs-on: ubuntu-latest
-    name: Backend Build & Test (Maven)
+    name: Build & Test Backend and Frontend
     steps:
       - uses: actions/checkout@v3
 
+      # Set up JDK 17 for Maven (Backend)
       - name: Set up JDK 17
         uses: actions/setup-java@v3
         with:
@@ -21,20 +24,17 @@ jobs:
           distribution: 'temurin'
           cache: maven
 
-      - name: Test
+      # Backend: Run Maven tests
+      - name: Test Backend
         run: mvn -f backend/ --batch-mode test
         continue-on-error: true
 
-      - name: Build with Maven
+      # Backend: Build JAR
+      - name: Build Backend with Maven
         run: mvn --batch-mode package --file backend/pom.xml
 
-      - name: Upload backend artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: backend-jar
-          path: backend/target/*.jar
-
-      - name: Report
+      # Backend: Test report
+      - name: Report Maven Tests
         uses: dorny/test-reporter@v1
         if: always()
         with:
@@ -43,34 +43,20 @@ jobs:
           reporter: java-junit
           fail-on-error: true
 
-  frontend-build:
-    runs-on: ubuntu-latest
-    name: Frontend Build & Test (Node/Vitest)
-    steps:
-      - uses: actions/checkout@v3
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v3
+      # Set up Node.js for Frontend
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
         with:
           node-version: '20'
           cache: 'npm'
           cache-dependency-path: frontend/package-lock.json
 
-      - name: Install frontend dependencies
+      # Frontend: Install dependencies
+      - name: Install Frontend Dependencies
         working-directory: frontend
         run: npm ci
 
-      - name: Run Vitest
+      # Frontend: Run Vitest
+      - name: Run Frontend Tests (Vitest)
         working-directory: frontend
         run: npm run test -- --run
-
-      - name: Build frontend
-        working-directory: frontend
-        run: npm run build
-
-      - name: Upload frontend artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: frontend-build
-          path: frontend/dist
-
