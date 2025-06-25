@@ -1,0 +1,62 @@
+# workflow with build and tests for backend and frontend
+# all in one single serial execution
+
+name: Java & Frontend CI
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+    name: Build & Test Backend and Frontend
+    steps:
+      - uses: actions/checkout@v3
+
+      # Set up JDK 17 for Maven (Backend)
+      - name: Set up JDK 17
+        uses: actions/setup-java@v3
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+          cache: maven
+
+      # Backend: Run Maven tests
+      - name: Test Backend
+        run: mvn -f backend/ --batch-mode test
+        continue-on-error: true
+
+      # Backend: Build WAR
+      - name: Build Backend with Maven
+        run: mvn --batch-mode package --file backend/pom.xml
+
+      # Backend: Test report
+      - name: Report Maven Tests
+        uses: dorny/test-reporter@v1
+        if: always()
+        with:
+          name: Maven Tests
+          path: backend/target/surefire-reports/*.xml
+          reporter: java-junit
+          fail-on-error: true
+
+      # Set up Node.js for Frontend
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+          cache-dependency-path: frontend/package-lock.json
+
+      # Frontend: Install dependencies
+      - name: Install Frontend Dependencies
+        working-directory: frontend
+        run: npm ci
+
+      # Frontend: Run Vitest
+      - name: Run Frontend Tests (Vitest)
+        working-directory: frontend
+        run: npm run test -- --run
