@@ -36,4 +36,4 @@ Kommentaren vor allem in App.js zu finden.
 - Test Umbegung mit Unit-Tests erweitern
 
 (Ausgaben für white-box debugging sind bereits auf den beiden Server vorhanden)
-test2
+test3
