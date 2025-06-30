@@ -1,5 +1,2 @@
 target
-.mvn
-mvnw
-mvnw.cmd
 *.log
