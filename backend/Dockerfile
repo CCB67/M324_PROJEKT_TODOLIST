@@ -1,7 +1,8 @@
 # Stage 1: Build mit Maven
 FROM eclipse-temurin:17-jdk-alpine AS build
 WORKDIR /app
-COPY mvnw .mvn/ pom.xml ./
+COPY mvnw pom.xml ./
+COPY .mvn /app/.mvn
 RUN chmod +x mvnw && ./mvnw dependency:go-offline
 COPY src ./src
 RUN ./mvnw package -DskipTests
