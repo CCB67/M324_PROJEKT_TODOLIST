@@ -1,15 +1,15 @@
-FROM node:18-alpine
-WORKDIR /srv
+# Stage 1: Build mit Maven
+FROM eclipse-temurin:17-jdk-alpine AS build
+WORKDIR /app
+COPY mvnw .mvn/ pom.xml ./
+RUN chmod +x mvnw && ./mvnw dependency:go-offline
+COPY src ./src
+RUN ./mvnw package -DskipTests
 
-# Nur Produktions-Dependencies installieren
-COPY package.json package-lock.json ./
-RUN npm install --production
+# Stage 2: Laufzeit mit JRE
+FROM eclipse-temurin:17-jre-alpine
+WORKDIR /app
+COPY --from=build /app/target/*.jar app.jar
+EXPOSE 8080
+ENTRYPOINT ["java", "-jar", "app.jar"]
 
-# Quellcode in das Image kopieren
-COPY . .
-
-# Port, auf dem die App lauscht
-EXPOSE 4000
-
-# Standardbefehl zum Starten der API
-CMD ["node", "server.js"]
