@@ -11,9 +11,11 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
-
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+
 
 /**
  * This is a demo application that provides a RESTful API for a simple ToDo list
@@ -33,7 +35,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 @RestController
 @SpringBootApplication
 public class DemoApplication {
-
+	private static final Logger log = LoggerFactory.getLogger(DemoApplication.class);
 	public static void main(String[] args) {
 		SpringApplication.run(DemoApplication.class, args);
 	}
@@ -86,7 +88,7 @@ public class DemoApplication {
 	@CrossOrigin
 	@PostMapping("/delete")
 	public String delTask(@RequestBody String taskdescription) {
-		System.out.println("API EP '/delete': '" + taskdescription + "'");
+		log.info("API EP '/delete' aufgerufen mit taskdescription='{}'", taskdescription);
 		ObjectMapper mapper = new ObjectMapper();
 		try {
 			Task task;
