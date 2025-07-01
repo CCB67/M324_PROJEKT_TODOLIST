@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import './App.css';
+import logo from "./assets/react.svg";
 
 function App() {
   const [taskDescription, setTaskDescription] = useState('');
@@ -58,7 +59,7 @@ function App() {
   return (
     <div className="App">
       <header className="App-header">
-        <img src="/src/assets/react.svg" className="App-logo" alt="logo" />
+        <img src={logo} className="App-logo" alt="logo" />
         <h1>ToDo Liste</h1>
         <form className="todo-form" onSubmit={handleSubmit}>
           <label htmlFor="taskdescription">Neues Todo anlegen:</label>
