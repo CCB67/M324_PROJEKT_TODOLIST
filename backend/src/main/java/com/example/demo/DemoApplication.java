@@ -36,7 +36,7 @@ public class DemoApplication {
 
 @RestController
 @RequestMapping("/api/tasks")
-@CrossOrigin(origins = "*", methods = {RequestMethod.GET, RequestMethod.POST, RequestMethod.DELETE})
+@CrossOrigin(origins = "*", methods = {RequestMethod.GET, RequestMethod.POST, RequestMethod.DELETE, RequestMethod.OPTIONS})
 class TaskController {
     private static final Logger log = LoggerFactory.getLogger(TaskController.class);
     private final List<Task> tasks = new ArrayList<>();
