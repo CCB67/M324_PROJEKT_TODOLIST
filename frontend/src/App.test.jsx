@@ -106,7 +106,7 @@ describe('App component', () => {
     });
 
     // Delete the first task
-    const deleteButtons = screen.getAllByRole('button', { name: /delete/i });
+    const deleteButton = screen.getByLabelText('Löschen');
     fireEvent.click(deleteButtons[0]);
 
     await waitFor(() => {
