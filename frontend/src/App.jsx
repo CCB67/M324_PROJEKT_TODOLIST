@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import './App.css';
 import logo from "./assets/react.svg";
 
-const API_BASE = 'http://localhost:8080/api/tasks';
+const API_BASE = 'http://localhost:4000/api/tasks';
 
 function App() {
   const [taskDescription, setTaskDescription] = useState('');
@@ -10,7 +10,7 @@ function App() {
 
   useEffect(() => {
     // Initialdaten vom Backend holen
-    fetch('http://localhost:8080/api/tasks')
+    fetch(API_BASE)
       .then((res) => res.json())
       .then((data) => setTasks(data))
       .catch((err) => console.error('Fehler beim Laden der Tasks:', err));
@@ -27,7 +27,7 @@ function App() {
     };
 
     // Optional: An Backend senden
-    fetch('http://localhost:8080/api/tasks', {
+    fetch(API_BASE, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(newTask),
