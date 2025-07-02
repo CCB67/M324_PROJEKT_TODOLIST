@@ -22,7 +22,7 @@ function App() {
     if (!taskDescription.trim()) return;
 
     const newTask = {
-      description: taskDescription.trim(),
+      taskdescription: taskDescription.trim(),
       done: false,
     };
 
