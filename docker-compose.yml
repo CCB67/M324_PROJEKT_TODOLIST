@@ -1,0 +1,14 @@
+services:
+  backend:
+    image: ghcr.io/ccb67/m324_projekt_todolist/todo-backend:latest
+    container_name: todo-backend
+    ports:
+      - "4000:8080"
+
+  frontend:
+    image: ghcr.io/ccb67/m324_projekt_todolist/todo-frontend:latest
+    container_name: todo-frontend
+    ports:
+      - "3000:80"
+    environment:
+      - VITE_API_URL=http://todo-backend:8080
