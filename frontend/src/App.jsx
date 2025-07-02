@@ -80,7 +80,7 @@ function App() {
           <ul className="todo-list">
             {tasks.map((task) => (
               <li key={task.id} className="todo-item">
-                {task.description}
+                {task.taskdescription}
                 <button
                   onClick={() => handleDelete(task.id)}
                   aria-label="Löschen"
