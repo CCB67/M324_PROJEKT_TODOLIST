@@ -2,6 +2,8 @@ import { useState, useEffect } from 'react';
 import './App.css';
 import logo from "./assets/react.svg";
 
+const API_BASE = 'http://localhost:8080/api/tasks';
+
 function App() {
   const [taskDescription, setTaskDescription] = useState('');
   const [tasks, setTasks] = useState([]);
@@ -43,17 +45,20 @@ function App() {
       });
   };
 
-  // Löschen-Handler: entfernt aus State und ruft DELETE-API auf
   const handleDelete = (id) => {
-    // State aktualisieren
-    setTasks((prev) => prev.filter((t) => t.id !== id));
+    // Zustand sofort aktualisieren
+    setTasks(prev => prev.filter(t => t.id !== id));
 
-    // Optional: Backend informieren
-    fetch(`http://localhost:8080/api/tasks/${id}`, {
-      method: 'DELETE',
-    }).catch((err) =>
-      console.error('Fehler beim Löschen der Aufgabe:', err)
-    );
+    // REST-Delete am Server auslösen
+    fetch(`${API_BASE}/${id}`, {
+      method: 'DELETE'
+    })
+      .then(res => {
+        if (!res.ok) {
+          throw new Error(`Löschen fehlgeschlagen: Status ${res.status}`);
+        }
+      })
+      .catch(err => console.error('Fehler beim Löschen der Aufgabe:', err));
   };
 
   return (

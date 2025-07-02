@@ -18,6 +18,10 @@ beforeEach(() => {
       });
     }
 
+    if (options?.method === 'DELETE') {
+      return Promise.resolve({ ok: true, json: () => Promise.resolve() });
+    }
+
     // GET-Fallback
     return Promise.resolve({
       json: () => Promise.resolve([]),
@@ -80,6 +84,34 @@ describe('App component', () => {
     await waitFor(() => {
       expect(screen.getByText(/Buy_groceries/)).toBeInTheDocument();
       expect(screen.getByText(/Do_laundry/)).toBeInTheDocument();
+    });
+  });
+
+  it('allows user to delete a task', async () => {
+    await act(async () => {
+      render(<App />);
+    });
+    const inputElement = screen.getByLabelText('Neues Todo anlegen:');
+    const addButtonElement = screen.getByRole('button', { name: /Absenden/i });
+
+    // Add two tasks
+    fireEvent.change(inputElement, { target: { value: 'TaskA' } });
+    fireEvent.click(addButtonElement);
+    fireEvent.change(inputElement, { target: { value: 'TaskB' } });
+    fireEvent.click(addButtonElement);
+
+    await waitFor(() => {
+      expect(screen.getByText(/TaskA/)).toBeInTheDocument();
+      expect(screen.getByText(/TaskB/)).toBeInTheDocument();
+    });
+
+    // Delete the first task
+    const deleteButtons = screen.getAllByRole('button', { name: /delete/i });
+    fireEvent.click(deleteButtons[0]);
+
+    await waitFor(() => {
+      expect(screen.queryByText(/TaskA/)).toBeNull();
+      expect(screen.getByText(/TaskB/)).toBeInTheDocument();
     });
   });
 });

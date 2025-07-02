@@ -19,6 +19,7 @@ Kommentaren vor allem in App.js zu finden.
 
 1. forken oder clonen
 1. *backend* in Eclipse importieren und mit Maven starten, oder in VS-Code via Java Extension Pack. Ohne Persistenz - nach dem Serverneustart sind die Todos futsch. Läuft auf default port 8080.
+ mvn -f backend/pom.xml clean package
 2. Im Terminal im *frontend* Verzeichnis
 	1. mit `npm install` benötige Module laden 
 	2. mit `npm run dev` den Frontend-Server starten

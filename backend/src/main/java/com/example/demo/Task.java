@@ -1,22 +1,56 @@
 package com.example.demo;
 
-/** the simplest task 
- * 
- * @author luh
- */
-public class Task {
-	
-	private String taskdescription; // must have the EXACT name as his React state property and may not be ignored!
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
-	public Task() {
+/**
+ * Repräsentiert ein Todo-Element mit ID, Beschreibung und Status
+ */
+@JsonIgnoreProperties(ignoreUnknown = true)
+public class Task {
+
+    private Long id;
+    private String taskdescription;
+    private boolean done;
+
+    public Task() {
+        // Default-Konstruktor für Jackson
     }
 
-	public String getTaskdescription() { // do not apply camel-case here! Its a Bean!
-		return taskdescription;
-	}
+    public Task(Long id, String taskdescription, boolean done) {
+        this.id = id;
+        this.taskdescription = taskdescription;
+        this.done = done;
+    }
 
-	public void setTaskdescription(String taskdescription) { // do not apply camel-case here! Its a Bean!
-		this.taskdescription = taskdescription;
-	}
+    public Long getId() {
+        return id;
+    }
 
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public String getTaskdescription() {
+        return taskdescription;
+    }
+
+    public void setTaskdescription(String taskdescription) {
+        this.taskdescription = taskdescription;
+    }
+
+    public boolean isDone() {
+        return done;
+    }
+
+    public void setDone(boolean done) {
+        this.done = done;
+    }
+
+    @Override
+    public String toString() {
+        return "Task{id=" + id + 
+               ", taskdescription='" + taskdescription + '\'' + 
+               ", done=" + done + '}';
+    }
 }
