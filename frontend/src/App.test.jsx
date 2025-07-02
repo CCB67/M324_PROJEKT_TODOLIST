@@ -14,7 +14,8 @@ beforeEach(() => {
         json: () =>
           Promise.resolve({
             id: mockId++, // use consecutive ID
-            ...body,
+            taskdescription: body.taskdescription,
+            done: body.done
           }),
       });
     }
