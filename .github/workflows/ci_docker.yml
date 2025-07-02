@@ -1,113 +1,66 @@
-name: Java & Frontend CI
+name: CI & Docker push
 
 on:
   push:
-    branches: [ "main" ]
+    branches: [ main ]
   pull_request:
-    branches: [ "main" ]
+    branches: [ main ]
 
 jobs:
-  backend-build:
+  build-and-push:
     runs-on: ubuntu-latest
-    name: Backend Build, Test & Docker
+    env:
+      IMAGE_NS: ghcr.io/${{ github.repository_owner }}/m324_projekt_todolist
     steps:
       - uses: actions/checkout@v3
 
-      - name: Set up JDK 17
-        uses: actions/setup-java@v3
+      # ---------- Maven (Backend) ----------
+      - uses: actions/setup-java@v3
         with:
-          java-version: '17'
-          distribution: 'temurin'
+          java-version: 17
+          distribution: temurin
           cache: maven
 
-      - name: Test
-        run: mvn -f backend/ --batch-mode test
-        continue-on-error: true
-
-      - name: Build with Maven
-        run: mvn --batch-mode package --file backend/pom.xml
-
-      - name: Upload backend artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: backend-jar
-          path: backend/target/*.jar
-
-      - name: Lowercase owner and repo
+      - name: Backend tests & package
         run: |
-          echo "OWNER=$(echo '${{ github.repository_owner }}' | tr '[:upper:]' '[:lower:]')" >> $GITHUB_ENV
-          echo "REPO=$(echo '${{ github.event.repository.name }}' | tr '[:upper:]' '[:lower:]')" >> $GITHUB_ENV
+          mvn -f backend/ -B test
+          mvn -f backend/ -B package -DskipTests
 
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v2
+      # ---------- Node (Frontend) ----------
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 20
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
 
-      - name: Log in to GitHub Container Registry
-        uses: docker/login-action@v2
+      - name: Frontend tests & build
+        run: |
+          cd frontend
+          npm ci
+          npm run test -- --run
+          npm run build
+
+      # ---------- Docker Buildx ----------
+      - uses: docker/setup-buildx-action@v2
+
+      - uses: docker/login-action@v2
         with:
           registry: ghcr.io
           username: ${{ github.actor }}
           password: ${{ secrets.GHCR_PAT }}
 
-      - name: Build and push backend Docker image
-        uses: docker/build-push-action@v4
+      # ---------- Build & push backend ----------
+      - uses: docker/build-push-action@v4
         with:
           context: ./backend
           file: ./backend/Dockerfile
           push: true
-          tags: |
-            ghcr.io/${{ env.OWNER }}/${{ env.REPO }}/todo-backend:latest
+          tags: ${{ env.IMAGE_NS }}/todo-backend:latest
 
-  frontend-build:
-    runs-on: ubuntu-latest
-    name: Frontend Build, Test & Docker
-    steps:
-      - uses: actions/checkout@v3
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v3
-        with:
-          node-version: '20'
-          cache: 'npm'
-          cache-dependency-path: frontend/package-lock.json
-
-      - name: Install frontend dependencies
-        working-directory: frontend
-        run: npm ci
-
-      - name: Run Vitest
-        working-directory: frontend
-        run: npm run test -- --run
-
-      - name: Build frontend
-        working-directory: frontend
-        run: npm run build
-
-      - name: Upload frontend artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: frontend-build
-          path: frontend/dist
-
-      - name: Lowercase owner and repo
-        run: |
-          echo "OWNER=$(echo '${{ github.repository_owner }}' | tr '[:upper:]' '[:lower:]')" >> $GITHUB_ENV
-          echo "REPO=$(echo '${{ github.event.repository.name }}' | tr '[:upper:]' '[:lower:]')" >> $GITHUB_ENV
-
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v2
-
-      - name: Log in to GitHub Container Registry
-        uses: docker/login-action@v2
-        with:
-          registry: ghcr.io
-          username: ${{ github.actor }}
-          password: ${{ secrets.GHCR_PAT }}
-
-      - name: Build and push frontend Docker image
-        uses: docker/build-push-action@v4
+      # ---------- Build & push frontend ----------
+      - uses: docker/build-push-action@v4
         with:
           context: ./frontend
           file: ./frontend/Dockerfile
           push: true
-          tags: |
-            ghcr.io/${{ env.OWNER }}/${{ env.REPO }}/todo-frontend:latest
+          tags: ${{ env.IMAGE_NS }}/todo-frontend:latest
