@@ -1,117 +1,102 @@
-import { useEffect, useState } from 'react'
-import logo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import { useState, useEffect } from 'react';
+import './App.css';
+import logo from "./assets/react.svg";
+
+// const API_BASE = 'http://localhost:4000/api/tasks';
+//const API_BASE = `http://${window.location.hostname}:4000/api/tasks`;
+const API_BASE = '/api/tasks';
 
 function App() {
-  const [count, setCount] = useState(0)
-  const [todos, setTodos] = useState([]);
-  const [taskdescription, setTaskdescription] = useState("");
+  const [taskDescription, setTaskDescription] = useState('');
+  const [tasks, setTasks] = useState([]);
 
-  /** Is called when the html form is submitted. It sends a POST request to the API endpoint '/tasks' and updates the component's state with the new todo.
-  ** In this case a new taskdecription is added to the actual list on the server.
-  */
-  const handleSubmit = event => {
-    event.preventDefault();
-    console.log("Sending task description to Spring-Server: "+taskdescription);
-    fetch("http://localhost:8080/tasks", {  // API endpoint (the complete URL!) to save a taskdescription
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify({ taskdescription: taskdescription }) // both 'taskdescription' are identical to Task-Class attribute in Spring
-    })
-    .then(response => {
-      console.log("Receiving answer after sending to Spring-Server: ");
-      console.log(response);
-      window.location.href = "/";
-      setTaskdescription("");             // clear input field, preparing it for the next input
-    })
-    .catch(error => console.log(error))
-  }
-
-   /** Is called when ever the html input field value below changes to update the component's state.
-  ** This is, because the submit should not take the field value directly.
-  ** The task property in the state is used to store the current value of the input field as the user types into it.
-  ** This is necessary because React operates on the principle of state and props, which means that a component's state
-  ** determines the component's behavior and render.
-  ** If we used the value directly from the HTML form field, we wouldn't be able to update the component's state and react to changes in the input field.
-  */
-  const handleChange = event => {
-    setTaskdescription(event.target.value);
-  }
-
-
-  /** Is called when the component is mounted (after any refresh or F5).
-  ** It updates the component's state with the fetched todos from the API Endpoint '/'.
-  */
   useEffect(() => {
-    fetch("http://localhost:8080/").then(response => response.json()).then(data => {
-      setTodos(data);
-    });
+    // Initialdaten vom Backend holen
+    fetch(API_BASE)
+      .then((res) => res.json())
+      .then((data) => setTasks(data))
+      .catch((err) => console.error('Fehler beim Laden der Tasks:', err));
   }, []);
 
+  const handleSubmit = (e) => {
+    e.preventDefault();
 
- /** Is called when the Done-Button is pressed. It sends a POST request to the API endpoint '/delete' and updates the component's state with the new todo.
-  ** In this case if the task with the unique taskdescription is found on the server, it will be removed from the list.
-  */
-  const handleDelete = (event, taskdescription) => {
-    console.log("Sending task description to delete on Spring-Server: "+taskdescription);
-    fetch(`http://localhost:8080/delete`, { // API endpoint (the complete URL!) to delete an existing taskdescription in the list
-      method: "POST",
-      body: JSON.stringify({ taskdescription: taskdescription }),
-      headers: {
-        "Content-Type": "application/json"
-      }
-    })
-    .then(response => {
-      console.log("Receiving answer after deleting on Spring-Server: ");
-      console.log(response);
-      window.location.href = "/";
-    })
-    .catch(error => console.log(error))
-  }
+    if (!taskDescription.trim()) return;
 
-  /**
-   * render all task lines
-   * @param {*} todos : Task list
-   * @returns html code snippet
-  */
-  const renderTasks = (todos) => {
-    return (
-      <ul className="todo-list">
-        {todos.map((todo, index) => (
-          <li key={todo.taskdescription}>
-            <span>{"Task " + (index+1) + ": "+ todo.taskdescription}</span>
-            <button onClick={(event) => handleDelete(event, todo.taskdescription) }>&#10004;</button>
-          </li>
-        ))}
-      </ul>
-    );
-  }
+    const newTask = {
+      taskdescription: taskDescription.trim(),
+      done: false,
+    };
+
+    // Optional: An Backend senden
+    fetch(API_BASE, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(newTask),
+    })
+      .then((res) => res.json())
+      .then((createdTask) => {
+        setTasks((prev) => [...prev, createdTask]);
+        setTaskDescription('');
+      })
+      .catch((err) => {
+        console.error('Fehler beim Erstellen der Aufgabe:', err);
+        // Fallback für Testbetrieb ohne Backend:
+        setTasks((prev) => [...prev, { ...newTask, id: Date.now() }]);
+        setTaskDescription('');
+      });
+  };
+
+  const handleDelete = (id) => {
+    // Zustand sofort aktualisieren
+    setTasks(prev => prev.filter(t => t.id !== id));
+
+    // REST-Delete am Server auslösen
+    fetch(`${API_BASE}/${id}`, {
+      method: 'DELETE'
+    })
+      .then(res => {
+        if (!res.ok) {
+          throw new Error(`Löschen fehlgeschlagen: Status ${res.status}`);
+        }
+      })
+      .catch(err => console.error('Fehler beim Löschen der Aufgabe:', err));
+  };
 
   return (
     <div className="App">
       <header className="App-header">
         <img src={logo} className="App-logo" alt="logo" />
-        <h1>
-          ToDo Liste
-        </h1>
-        <form onSubmit={handleSubmit} className='todo-form'>
+        <h1>ToDo Liste</h1>
+        <form className="todo-form" onSubmit={handleSubmit}>
           <label htmlFor="taskdescription">Neues Todo anlegen:</label>
           <input
+            id="taskdescription"
             type="text"
-            value={taskdescription}
-            onChange={handleChange}
+            value={taskDescription}
+            onChange={(e) => setTaskDescription(e.target.value)}
           />
           <button type="submit">Absenden</button>
         </form>
         <div>
-          {renderTasks(todos)}
+          <ul className="todo-list">
+            {tasks.map((task) => (
+              <li key={task.id} className="todo-item">
+                {task.taskdescription}
+                <button
+                  onClick={() => handleDelete(task.id)}
+                  aria-label="Löschen"
+                  className="delete-button"
+                >
+                  delete
+                </button>
+              </li>
+            ))}
+          </ul>
         </div>
       </header>
     </div>
   );
 }
 
-export default App
+export default App;
