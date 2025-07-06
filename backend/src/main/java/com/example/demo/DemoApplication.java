@@ -27,6 +27,14 @@ import java.util.concurrent.atomic.AtomicLong;
  * @author luh
  */
 
+ @CrossOrigin(
+        origins = { "http://localhost:3000" // React‑Dev‑Server
+				},
+        methods = { RequestMethod.GET, RequestMethod.POST,
+                    RequestMethod.DELETE, RequestMethod.OPTIONS },
+        allowedHeaders = "*"
+)
+@RestController
 @SpringBootApplication
 public class DemoApplication {
   public static void main(String[] args) {
@@ -36,7 +44,6 @@ public class DemoApplication {
 
 @RestController
 @RequestMapping("/api/tasks")
-@CrossOrigin(origins = "*", methods = {RequestMethod.GET, RequestMethod.POST, RequestMethod.DELETE, RequestMethod.OPTIONS}, allowedHeaders = "*" )
 class TaskController {
     private static final Logger log = LoggerFactory.getLogger(TaskController.class);
     private final List<Task> tasks = new ArrayList<>();
