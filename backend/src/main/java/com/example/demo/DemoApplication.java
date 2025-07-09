@@ -9,7 +9,8 @@ import org.springframework.web.bind.annotation.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicLong;
-
+import io.swagger.v3.oas.annotations.OpenAPIDefinition;
+import io.swagger.v3.oas.annotations.info.Info;
 
 /**
  * This is a demo application that provides a RESTful API for a simple ToDo list
@@ -27,6 +28,14 @@ import java.util.concurrent.atomic.AtomicLong;
  * @author luh
  */
 
+@OpenAPIDefinition(
+    info = @Info(
+        title = "Todo App",
+        version = "1.0",
+        description = "Dokumentation der Backend-Schnittstellen"
+    )
+)
+
  @CrossOrigin(
         origins = { "http://localhost:3000" // React‑Dev‑Server
 				},
@@ -43,8 +52,9 @@ public class DemoApplication {
 }
 
 @RestController
-@RequestMapping("/api/tasks")
+@RequestMapping(TaskController.API_BASE)
 class TaskController {
+    public static final String API_BASE = "/api/tasks";
     private static final Logger log = LoggerFactory.getLogger(TaskController.class);
     private final List<Task> tasks = new ArrayList<>();
     private final AtomicLong idCounter = new AtomicLong(0);
@@ -52,7 +62,7 @@ class TaskController {
 
   @GetMapping
   public List<Task> getTasks() {
-    log.info("API EP GET /api/tasks → {} items", tasks.size());
+    log.info("API EP GET {} → {} items", API_BASE, tasks.size());
     return tasks;
   }
 
@@ -60,14 +70,14 @@ class TaskController {
   public Task addTask(@RequestBody Task task) {
       long id = idCounter.incrementAndGet();
       task.setId(id);
-      log.info("API EP POST /api/tasks: assigning id={} to new task {}", id, task);
+      log.info("API EP POST {}: assigning id={} to new task {}", API_BASE, id, task);
       tasks.add(task);
       return task;
   }
 
   @DeleteMapping("/{id}")
   public ResponseEntity<Void> deleteTask(@PathVariable Long id) {
-      log.info("API EP DELETE /api/tasks/{} aufgerufen", id);
+      log.info("API EP DELETE {}/{} aufgerufen", API_BASE, id);
       boolean removed = tasks.removeIf(t -> t.getId().equals(id));
       return removed
           ? ResponseEntity.noContent().build()
@@ -76,9 +86,49 @@ class TaskController {
 
   @PostMapping("/reset")
   public ResponseEntity<Void> resetAll() {
-    log.info("API EP POST /api/tasks/reset");
+    log.info("API EP POST {}/reset", API_BASE);
     tasks.clear();
     return ResponseEntity.noContent().build();
   }
 }
 
+@RestController
+@RequestMapping(TaskController1.API_BASE)
+class TaskController1 {
+    public static final String API_BASE = "/api/v1/tasks";
+    private static final Logger log = LoggerFactory.getLogger(TaskController.class);
+    private final List<Task> tasks = new ArrayList<>();
+    private final AtomicLong idCounter = new AtomicLong(0);
+
+
+  @GetMapping
+  public List<Task> getTasks() {
+    log.info("API EP GET {} → {} items", API_BASE, tasks.size());
+    return tasks;
+  }
+
+  @PostMapping
+  public Task addTask(@RequestBody Task task) {
+      long id = idCounter.incrementAndGet();
+      task.setId(id);
+      log.info("API EP POST {}: assigning id={} to new task {}", API_BASE, id, task);
+      tasks.add(task);
+      return task;
+  }
+
+  @DeleteMapping("/{id}")
+  public ResponseEntity<Void> deleteTask(@PathVariable Long id) {
+      log.info("API EP DELETE {}/{} aufgerufen", API_BASE, id);
+      boolean removed = tasks.removeIf(t -> t.getId().equals(id));
+      return removed
+          ? ResponseEntity.noContent().build()
+          : ResponseEntity.notFound().build();
+  }
+
+  @PostMapping("/reset")
+  public ResponseEntity<Void> resetAll() {
+    log.info("API EP POST {}/reset", API_BASE);
+    tasks.clear();
+    return ResponseEntity.noContent().build();
+  }
+}
