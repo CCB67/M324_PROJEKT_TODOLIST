@@ -2,9 +2,9 @@ import { useState, useEffect } from 'react';
 import './App.css';
 import logo from "./assets/react.svg";
 
-// const API_BASE = 'http://localhost:4000/api/tasks';
+//const API_BASE = 'http://localhost:4000/api/tasks';
 //const API_BASE = `http://${window.location.hostname}:4000/api/tasks`;
-const API_BASE = '/api/tasks';
+const API_BASE = '/api/v1/tasks';
 
 function App() {
   const [taskDescription, setTaskDescription] = useState('');
