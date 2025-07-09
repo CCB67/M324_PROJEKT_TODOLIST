@@ -54,7 +54,7 @@ public class DemoApplication {
 @RestController
 @RequestMapping(TaskController.API_BASE)
 class TaskController {
-    public static final String API_BASE = "/api/v1/tasks";
+    public static final String API_BASE = "/api/tasks";
     private static final Logger log = LoggerFactory.getLogger(TaskController.class);
     private final List<Task> tasks = new ArrayList<>();
     private final AtomicLong idCounter = new AtomicLong(0);
@@ -93,9 +93,9 @@ class TaskController {
 }
 
 @RestController
-@RequestMapping(TaskController2.API_BASE)
-class TaskController2 {
-    public static final String API_BASE = "/api/v2/tasks";
+@RequestMapping(TaskController1.API_BASE)
+class TaskController1 {
+    public static final String API_BASE = "/api/v1/tasks";
     private static final Logger log = LoggerFactory.getLogger(TaskController.class);
     private final List<Task> tasks = new ArrayList<>();
     private final AtomicLong idCounter = new AtomicLong(0);
