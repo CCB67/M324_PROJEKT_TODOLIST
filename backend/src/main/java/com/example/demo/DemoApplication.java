@@ -6,6 +6,8 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicLong;
@@ -100,20 +102,30 @@ class TaskController1 {
     private final List<Task> tasks = new ArrayList<>();
     private final AtomicLong idCounter = new AtomicLong(0);
 
-
   @GetMapping
-  public List<Task> getTasks() {
+  public ResponseEntity<List<Task>> getTasks() {
     log.info("API EP GET {} → {} items", API_BASE, tasks.size());
-    return tasks;
+    return ResponseEntity.ok(tasks); // 200
+  }
+
+  @GetMapping("/{id}")
+  public ResponseEntity<Task> getTask(@PathVariable Long id) {
+    for (Task t : tasks) {
+        if (t.getId().equals(id)) {
+            return ResponseEntity.ok(t); // 200
+        }
+    }
+    return ResponseEntity.notFound().build(); // 404
   }
 
   @PostMapping
-  public Task addTask(@RequestBody Task task) {
+  public ResponseEntity<Task> addTask(@RequestBody Task task) {
       long id = idCounter.incrementAndGet();
       task.setId(id);
       log.info("API EP POST {}: assigning id={} to new task {}", API_BASE, id, task);
       tasks.add(task);
-      return task;
+      URI location = URI.create(API_BASE + "/" + id);
+      return ResponseEntity.created(location).body(task); // 201 Created + Body
   }
 
   @DeleteMapping("/{id}")
@@ -121,14 +133,14 @@ class TaskController1 {
       log.info("API EP DELETE {}/{} aufgerufen", API_BASE, id);
       boolean removed = tasks.removeIf(t -> t.getId().equals(id));
       return removed
-          ? ResponseEntity.noContent().build()
-          : ResponseEntity.notFound().build();
+          ? ResponseEntity.noContent().build() // 204
+          : ResponseEntity.notFound().build(); // 404
   }
 
   @PostMapping("/reset")
   public ResponseEntity<Void> resetAll() {
     log.info("API EP POST {}/reset", API_BASE);
     tasks.clear();
-    return ResponseEntity.noContent().build();
+    return ResponseEntity.noContent().build(); // 204
   }
 }
